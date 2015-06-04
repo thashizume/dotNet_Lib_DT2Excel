@@ -10,19 +10,29 @@
     End Function
 
     Public Function ToDataTable(fileName As String, sheetName As String, columns As Long, _
-                                Optional headerRowNumber As Long = 1, Optional skipRow As Long = 1, _
+                                Optional headerRowNumber As Long = 1, Optional password As String = Nothing, Optional skipRow As Long = 1, _
                                 Optional loadColumns As Long() = Nothing) As System.Data.DataTable
 
         '   Validate Excel File
         If (New System.IO.FileInfo(fileName).Exists) = False Then Throw New Exception("can not found file :" & fileName)
-        If existSheet(SpreadsheetGear.Factory.GetWorkbook(fileName), sheetName) = False Then Throw New Exception("can not found Worksheet : " & sheetName)
+        'Dim _xls As SpreadsheetGear.IWorkbook = SpreadsheetGear.Factory.GetWorkbooks
+        Dim _wbs As SpreadsheetGear.IWorkbookSet = SpreadsheetGear.Factory.GetWorkbookSet()
+        Dim _xls As SpreadsheetGear.IWorkbook
+
+        If IsNothing(password) Then
+            _xls = _wbs.Workbooks.Open(fileName)
+        Else
+            _xls = _wbs.Workbooks.Open(fileName, password)
+        End If
+
+        If existSheet(_xls, sheetName) = False Then Throw New Exception("can not found Worksheet : " & sheetName)
 
         '   Define Variable Items
         Dim _dt As System.Data.DataTable = Me.generateDataTable( _
-                SpreadsheetGear.Factory.GetWorkbook(fileName).Worksheets(sheetName), columns, headerRowNumber)
+                _xls.Worksheets(sheetName), columns, headerRowNumber)
 
         '   Load Data
-        Dim _sheet As SpreadsheetGear.IWorksheet = SpreadsheetGear.Factory.GetWorkbook(fileName).Worksheets(sheetName)
+        Dim _sheet As SpreadsheetGear.IWorksheet = _xls.Worksheets(sheetName)
         Dim _r As Long = 1
         Dim _eorBuffer As String
         Do
@@ -39,7 +49,7 @@
         Return _dt
     End Function
 
-    Private Function existSheet(xls As SpreadsheetGear.IWorkbook, sheetName As String) As Boolean
+    Private Function existSheet(xls As SpreadsheetGear.IWorkbook, sheetName As String, Optional password As String = Nothing) As Boolean
         For Each _sheet As SpreadsheetGear.IWorksheet In xls.Worksheets
             If _sheet.Name = sheetName Then Return True
         Next
