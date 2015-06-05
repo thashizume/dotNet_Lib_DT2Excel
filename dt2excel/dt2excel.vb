@@ -1,6 +1,8 @@
 ﻿Public Class dt2excel
 
-    Public Function ToExcel(dt As System.Data.DataTable, fileName As String, sheetName As String)
+    Public Function ToExcel(dt As System.Data.DataTable, _
+                            fileName As String, sheetName As String, Optional outputOfHeader As Boolean = True, Optional password As String = Nothing)
+
         Dim _xlsWorkbook As SpreadsheetGear.IWorkbook = SpreadsheetGear.Factory.GetWorkbook(fileName)
 
 
@@ -16,7 +18,7 @@
         '   Validate Excel File
         If (New System.IO.FileInfo(fileName).Exists) = False Then Throw New Exception("can not found file :" & fileName)
         'Dim _xls As SpreadsheetGear.IWorkbook = SpreadsheetGear.Factory.GetWorkbooks
-        Dim _wbs As SpreadsheetGear.IWorkbookSet = SpreadsheetGear.Factory.GetWorkbookSet()
+        Dim _wbs As SpreadsheetGear.IWorkbookSet = SpreadsheetGear.Factory.GetWorkbookSet(System.Globalization.CultureInfo.CurrentCulture)
         Dim _xls As SpreadsheetGear.IWorkbook
 
         If IsNothing(password) Then
