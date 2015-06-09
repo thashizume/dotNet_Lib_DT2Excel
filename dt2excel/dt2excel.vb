@@ -4,10 +4,6 @@
                             fileName As String, sheetName As String, Optional outputOfHeader As Boolean = True, Optional password As String = Nothing)
 
         Dim _xlsWorkbook As SpreadsheetGear.IWorkbook = SpreadsheetGear.Factory.GetWorkbook(fileName)
-
-
-
-
         Return Nothing
     End Function
 
